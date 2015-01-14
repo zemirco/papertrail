@@ -4,15 +4,15 @@
 //
 //  writer := papertrail.Writer{
 //    Port: 12345,
-//		Network: papertrail.UDP,
+//    Network: papertrail.UDP,
 //  }
 //
 //  // use writer directly
 //  n, err := writer.Write([]byte("writer"))
-//	if err != nil {
-//		panic(err)
-//	}
-//	fmt.Printf("number of bytes written: %d\n", n)
+//  if err != nil {
+//    panic(err)
+//  }
+//  fmt.Printf("number of bytes written: %d\n", n)
 //
 //  // or create a new logger
 //  logger := log.New(&writer, "", log.LstdFlags)
@@ -27,8 +27,10 @@ import (
 	"net"
 )
 
-const TCP = "tcp"
-const UDP = "udp"
+const (
+	TCP = "tcp"
+	UDP = "udp"
+)
 
 type Writer struct {
 	Port    int
