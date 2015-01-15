@@ -4,11 +4,11 @@
 //
 //  writer := papertrail.Writer{
 //    Port: 12345,
-//    Network: papertrail.UDP,
+//    Network: papertrail.TCP,
 //  }
 //
 //  // use writer directly
-//  n, err := writer.Write([]byte("writer"))
+//  n, err := writer.Write([]byte("writer\n"))
 //  if err != nil {
 //    panic(err)
 //  }
@@ -39,32 +39,27 @@ type Writer struct {
 
 func (w *Writer) Write(p []byte) (n int, err error) {
 
+	var conn net.Conn
 	address := fmt.Sprintf("logs.papertrailapp.com:%d", w.Port)
 
-	if w.Network == UDP {
-		conn, err := net.Dial(UDP, address)
-		if err != nil {
-			return 0, err
-		}
-		defer conn.Close()
-		return conn.Write(p)
-	}
-
-	if w.Network == TCP {
+	switch w.Network {
+	case UDP:
+		conn, err = net.Dial(UDP, address)
+	case TCP:
 		roots := x509.NewCertPool()
-		ok := roots.AppendCertsFromPEM([]byte(pem))
-		if !ok {
+		if ok := roots.AppendCertsFromPEM([]byte(pem)); !ok {
 			return 0, errors.New("Failed to parse root certificate.")
 		}
-		conn, err := tls.Dial(TCP, address, &tls.Config{
+		conn, err = tls.Dial(TCP, address, &tls.Config{
 			RootCAs: roots,
 		})
-		if err != nil {
-			return 0, err
-		}
-		defer conn.Close()
-		return conn.Write(p)
+	default:
+		return 0, errors.New("Invalid Network. Neither UDP nor TCP.")
 	}
 
-	return 0, errors.New("Invalid Protocol. Neither UDP nor TCP.")
+	if err != nil {
+		return 0, err
+	}
+	defer conn.Close()
+	return conn.Write(p)
 }

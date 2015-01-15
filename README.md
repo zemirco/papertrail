@@ -20,7 +20,7 @@ func main() {
   }
 
   // use writer directly
-  n, err := writer.Write([]byte("writer"))
+  n, err := writer.Write([]byte("writer\n"))
   if err != nil {
     panic(err)
   }
