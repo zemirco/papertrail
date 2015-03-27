@@ -41,6 +41,11 @@ type Writer struct {
 func (w *Writer) Write(p []byte) (n int, err error) {
 
 	var conn net.Conn
+
+	if w.Server == "" {
+		w.Server = "logs"
+	}
+
 	address := fmt.Sprintf("%s.papertrailapp.com:%d", w.Server, w.Port)
 
 	switch w.Network {
