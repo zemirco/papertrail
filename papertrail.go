@@ -35,12 +35,13 @@ const (
 type Writer struct {
 	Port    int
 	Network string
+	Server  string
 }
 
 func (w *Writer) Write(p []byte) (n int, err error) {
 
 	var conn net.Conn
-	address := fmt.Sprintf("logs.papertrailapp.com:%d", w.Port)
+	address := fmt.Sprintf("%s.papertrailapp.com:%d", w.Server, w.Port)
 
 	switch w.Network {
 	case UDP:
